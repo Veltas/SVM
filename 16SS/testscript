@@ -1,0 +1,42 @@
+
+sp 72 sp 101 sp 108 sp 108 sp 111 sp 32
+sp 87 sp 0111 sp 114 sp 108 sp 100 sp 33
+sp 10 srev
+printc
+
+
+sp 84 sp 101 sp 115 sp 116 sp 115 sp 58 sp 10 srev
+printc
+
+
+sp 9 putc
+sp 97 sp 100 sp 100 sp 58 srev
+printc
+
+spush 10
+spush 5
+madd
+spush 5
+madd
+sp 9 putc
+put
+
+
+sp 10 putc
+
+
+sp 9 putc
+sp 109 sp 117 sp 108 sp 58 srev
+printc
+
+spush 256
+spush 4
+mmul
+sp 9 putc
+put 
+
+
+spush 10
+putc
+halt
+
