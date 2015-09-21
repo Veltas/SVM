@@ -10,13 +10,14 @@ void s_vm_init()
 {
     s_setopinfo_(S_OP_END, "end", false);
     s_setopinfo_(S_OP_HALT, "halt", false);
-    s_setopinfo_(S_OP_DMPBC, "dmpbc", false);
-    s_setopinfo_(S_OP_DMPBCN, "dmpbcn", false);
+    s_setopinfo_(S_OP_DUMPBC, "dumpbc", false);
+    s_setopinfo_(S_OP_DUMPNBC, "dumpnbc", false);
 
     s_setopinfo_(S_OP_SPUSH, "spush", true);
     s_setopinfo_(S_OP_SP, "sp", true);
     s_setopinfo_(S_OP_SPOP, "spop", false);
     s_setopinfo_(S_OP_SREV, "srev", false);
+    s_setopinfo_(S_OP_SREVN, "srevn", true);
     s_setopinfo_(S_OP_SDMP, "sdmp", false);
     s_setopinfo_(S_OP_SDUP, "sdup", false);
 
@@ -24,33 +25,30 @@ void s_vm_init()
     s_setopinfo_(S_OP_MSUB, "msub", false);
     s_setopinfo_(S_OP_MMUL, "mmul", false);
     s_setopinfo_(S_OP_MDIV, "mdiv", false);
+
     s_setopinfo_(S_OP_INC, "inc", false);
     s_setopinfo_(S_OP_DEC, "dec", false);
 
-    s_setopinfo_(S_OP_PUT, "put", false);
-    s_setopinfo_(S_OP_PUTC, "putc", false);
-    s_setopinfo_(S_OP_PUTN, "putn", true);
-    s_setopinfo_(S_OP_PUTNC, "putnc", true);
-    s_setopinfo_(S_OP_PUTALL, "putall", false);
-    s_setopinfo_(S_OP_PUTALLC, "putallc", false);
+    s_setopinfo_(S_OP_XOR, "xor", false);
+    s_setopinfo_(S_OP_AND, "and", false);
+    s_setopinfo_(S_OP_OR, "or", false);
+    s_setopinfo_(S_OP_NOT, "not", false);
+
+    s_setopinfo_(S_OP_PRINT, "print", false);
+    s_setopinfo_(S_OP_PRINTN, "printn", true);
 
     s_setopinfo_(S_OP_CMPE, "cmpe", false);
     s_setopinfo_(S_OP_CMPG, "cmpg", false);
     s_setopinfo_(S_OP_CMPGE, "cmpge", false);
 
-    s_setopinfo_(S_OP_JMPBT, "jmpbt", true);
-    s_setopinfo_(S_OP_JMPBF, "jmpbf", true);
-    s_setopinfo_(S_OP_JMPB, "jmpb", true);
-    s_setopinfo_(S_OP_JMPFT, "jmpft", true);
-    s_setopinfo_(S_OP_JMPFF, "jmpff", true);
-    s_setopinfo_(S_OP_JMPF, "jmpf", true);
-    s_setopinfo_(S_OP_JMPTT, "jmptt", true);
-    s_setopinfo_(S_OP_JMPTF, "jmptf", true);
-    s_setopinfo_(S_OP_JMPT, "jmpt", true);
+    s_setopinfo_(S_OP_JUMP, "jump", true);
+    s_setopinfo_(S_OP_JUMPT, "jumpt", true);
+    s_setopinfo_(S_OP_JUMPF, "jumpf", true);
+    s_setopinfo_(S_OP_LABEL, "label", true);
     //s_setopinfo_(S_OP_, "", false);
 }
 
-void s_run(sSegment *C)
+void s_run(sContext *C)
 {
     C->running = true;
     while (C->running)
@@ -60,7 +58,7 @@ void s_run(sSegment *C)
     }
 }
 
-void s_addinst(sSegment *C, byte O, word V)
+void s_addinst(sContext *C, byte O, word V)
 {
     word newsize = 1;
     if (s_opinfo_hasreg(O))
@@ -153,7 +151,7 @@ void s_dump_bytecode(byte *code, word sz, bool nice)
     }
 }
 
-void s_dump_stack(sSegment *S)
+void s_dump_stack(sContext *S)
 {
     char *buffer = calloc(S->stack_count * 6, sizeof(byte));
     if (!buffer) return;

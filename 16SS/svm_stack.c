@@ -4,25 +4,34 @@
 
 
 
-void s_push(sSegment *C, word v)
+void s_push(sContext *C, word v)
 {
     if (C->stack_count < STACK_SZ)
         C->stack[C->stack_count++] = v;
 }
 
-word s_pop(sSegment *C)
+word s_pop(sContext *C)
 {
     if (C->stack_count > 0)
         return C->stack[--C->stack_count];
     return 0;
 }
 
-void s_reverse(sSegment *C)
+void s_reverse(sContext *C, bool manualcount, word N)
 {
-    for (word i = 0; i < C->stack_count / 2; i++)
-    {
-        word t = C->stack[i];
-        C->stack[i] = C->stack[C->stack_count - i - 1];
-        C->stack[C->stack_count - i - 1] = t;
-    }
+    if (!manualcount)
+        for (word i = 0; i < C->stack_count / 2; i++)
+        {
+            word i2 = C->stack_count - i - 1;
+            word t = C->stack[i];
+            C->stack[i] = C->stack[i2];
+            C->stack[i2] = t;
+        }
+    else
+        for (word i = C->stack_count, j = C->stack_count - N; i > N/2 - C->stack_count; i--, j++)
+        {
+            word t = C->stack[i];
+            C->stack[i] = C->stack[j];
+            C->stack[j] = t;
+        }
 }

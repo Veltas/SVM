@@ -4,116 +4,146 @@
 #include "svm.h"
 
 
-char *strnew(char *str)
+typedef enum
 {
-    char *s = calloc(strlen(str) + 1, sizeof *s);
-    strcpy(s, str);
-    return s;
-}
+    ACT_Compile,
+    ACT_Run,
+    ACT_Dump,
+} Action;
 
-void strreverse(char *str)
-{
-    size_t len = strlen(str);
-    for (size_t i = 0; i < len / 2; i++)
-    {
-        size_t i2 = len - i - 1;
-        char tmp = str[i];
-        str[i] = str[i2];
-        str[i2] = tmp;
-    }
-}
-#include <limits.h>
+
 int main(int argc, char *argv[])
 {
     s_vm_init();
-/*
-    s_addinst(ctx, S_OP_PUSH, 99);
-    s_addinst(ctx, S_OP_PUSH, 1);
-    s_addinst(ctx, S_OP_ADD, 0);
-    s_addinst(ctx, S_OP_PUT, 0);
-    s_addinst(ctx, S_OP_POP, 0);
 
-    char text[] = "\nHello world!\n";
-    strreverse(text);
-    for (int i = 0; i < strlen(text); i++)
-        s_addinst(ctx, S_OP_PUSH, text[i]);
-    s_addinst(ctx, S_OP_PRINTC, 0);
-    s_addinst(ctx, S_OP_HALT, 0); */
+    Action act;
+    bool isbytecode = false;
 
     if (argc < 2)
     {
-        printf("Usage: SVM16SS <filename> [-c]\n");
+        printf("Usage: SVM16SS <filename>.s/sc [-c][-d]\n");
         return 0;
     }
 
-    bool compileonly = false;
-    if (argc == 3 && !strcmp(argv[2], "-c"))
+    if (!strcmp(argv[1] + (strlen(argv[1]) - 3), ".sc"))
+        isbytecode = true;
+
+    if (argc == 3)
     {
-        printf("Compiling %s to %s.slc\n", argv[1], argv[1]);
-        compileonly = true;
+        if (!strcmp(argv[2], "-c"))
+        {
+            if (isbytecode)
+            {
+                printf("Cannot compile bytecode\n");
+                return 0;
+            }
+            printf("Compiling %s to %s.sc\n", argv[1], argv[1]);
+            act = ACT_Compile;
+        }
+        else if (!strcmp(argv[2], "-d"))
+        {
+            act = ACT_Dump;
+        }
+        else
+        {
+            printf("Invalid switch\n");
+            return 0;
+        }
     }
+    else act = ACT_Run;
 
-    char *buffer;
-    FILE *fh = fopen(argv[1], "rb");
-    if (!fh)
+    word bcodesize = 0;
+    byte *bcode;
+
+    if (!isbytecode)
     {
-        printf("No such file\n");
-        return 0;
-    }
+        char *buffer;
+        FILE *fr = fopen(argv[1], "rb");
+        if (!fr)
+        {
+            printf("No such file\n");
+            return 0;
+        }
 
-    fseek(fh, 0L, SEEK_END);
-    long s = ftell(fh);
-    rewind(fh);
-    buffer = malloc(s);
+        fseek(fr, 0L, SEEK_END);
+        long bufferlen = ftell(fr);
+        rewind(fr);
+        buffer = calloc(bufferlen, sizeof *buffer);
 
-    if (!buffer)
-    {
-        printf("Couldnt read file");
-        return 0;
-    }
+        if (!buffer)
+        {
+            printf("Couldnt read file\n");
+            return 0;
+        }
 
-    fread(buffer, s, 1, fh);
-    fclose(fh); fh = NULL;
+        fread(buffer, bufferlen, sizeof *buffer, fr);
+        fclose(fr);
 
-    word psz = 0;
-    byte *bcode = s_compile(buffer, strlen(buffer), &psz);
-    free(buffer);
-
-    if (!bcode)
-    {
-        puts("Couldnt compile");
-        return 1;
-    }
-
-    if (!compileonly)
-    {
-        sSegment *seg = s_new();
-        s_segment_setprogram(seg, bcode, psz);
-        s_run(seg);
-        free(seg);
+        if (!s_compile(buffer, bufferlen, &bcode, &bcodesize))
+        {
+            puts("Compilation failed\n");
+            free(buffer);
+            return 1;
+        }
+        free(buffer);
     }
     else
     {
-        char *newfilename = calloc(strlen(argv[1]) + 5, sizeof(char));
-        if (!newfilename)
+        FILE *fr = fopen(argv[1], "rb");
+        if (!fr)
         {
-            printf("Error\n");
+            printf("No such file\n");
             return 0;
         }
+        fseek(fr, 0, SEEK_END);
+        bcodesize = ftell(fr);
+        rewind(fr);
+        bcode = calloc(bcodesize, sizeof *bcode);
+        fread(bcode, bcodesize, sizeof *bcode, fr);
+        fclose(fr);
+    }
+
+    switch (act)
+    {
+    case ACT_Compile:
+    {
+        char *newfilename = calloc(strlen(argv[1]) + 4, sizeof(char));
+        if (!newfilename)
+        {
+            printf("Allocation failed\n");
+            free(bcode);
+            return 0;
+        }
+
         strcpy(newfilename, argv[1]);
-        strcat(newfilename, ".slc");
+        strcat(newfilename, ".sc");
         FILE *fw = fopen(newfilename, "wb");
         free(newfilename);
         if (!fw)
         {
             printf("Couldnt open file for write\n");
+            free(bcode);
             return 0;
         }
 
-        fwrite(bcode, psz, sizeof(byte), fw);
+        fwrite(bcode, bcodesize, sizeof *bcode, fw);
         fclose(fw);
+        break;
+    }
+    case ACT_Dump:
+        s_dump_bytecode(bcode, bcodesize, true);
+        break;
+    case ACT_Run:
+    {
+        sContext *ctx = s_new();
+        s_context_setprogram(ctx, bcode, bcodesize);
+        s_run(ctx);
+        free(ctx);
+        break;
+    }
     }
 
     free(bcode);
-	return 0;
+
+    return 0;
 }

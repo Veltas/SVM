@@ -1,12 +1,9 @@
-
-
-spush 5100
-spush 16000
-spush 65000
-spush 12
-
-sdmp
-jmpt 0
-dmpbcn
-sp 10 putc halt
-
+sp 65
+sp 66
+sp 1
+sp 2
+sp 3
+sdup
+printn 2
+dumpnbc
+halt

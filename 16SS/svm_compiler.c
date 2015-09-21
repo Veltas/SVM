@@ -5,117 +5,99 @@
 #include <ctype.h>
 
 
-char* strtolower(char *str)
+static struct
 {
-    size_t l = strlen(str);
-    for (size_t i = 0; i <= l; i++)
-        str[i] = tolower(str[i]);
-    return str;
-}
+    sOp op;
+    word reg;
+    bool hasreg;
+} AST_[512];
+static word AST_count = 0;
 
-word appendcode(byte **code, word currsz, char *N, word V)
+bool s_compile(char *program, word sz, byte **pcompiled, word *compiledsize)
 {
-    word newsize = 1;
-    sOp O = s_opinfo_find(N);
-
-    if (O == S_OP_END) return 0;
-    if (s_opinfo_hasreg(O))
-        newsize += sizeof V;
-    if (*code)
-    {
-        byte *ptr = realloc(*code, sizeof(byte) * (currsz + newsize));
-        if (ptr)
-            *code = ptr;
-        else return 0;
-    }
-    else
-    {
-        byte *ptr = malloc(sizeof(byte) * newsize);
-        if (ptr)
-            *code = ptr;
-        else return 0;
-    }
-
-    byte *c = *code;
-    c[currsz++] = (byte)O;
-    if (s_opinfo_hasreg(O))
-        memcpy(c + currsz, &V, sizeof V);
-
-    return newsize;
-}
-
-byte* s_compile(char *program, word sz, word *compilesz)
-{
-    // takes whitespaces and newlines as delimiter
-    // converts op codes to lowercase
-
-    // starts by getting an op
-    // if reached space, check if op has register
-    // if op has register, read the next characters until whitespace
-    // if op has no register, read next op
-
-    char tmp[128] = {0};
-    char tmp2[128] = {0};
-    int tmpi = 0;
+    char token[128] = {0};
+    word tokenIndex = 0;
+    word bcneededsize = 0;
     bool needreg = false;
-    bool islast = false;
-
-    byte *code = NULL;
-    word codesz = 0;
+    bool islasttoken = false;
 
     for (word i = 0; i < sz; i++)
     {
         char c = program[i];
+
         if (i == sz - 1 && isgraph(c))
         {
-            tmp[tmpi++] = c;
-            islast = true;
+            token[tokenIndex++] = c;
+            islasttoken = true;
         }
-        if (c == ' ' || c == '\n' || islast)
+
+        if (c == ' ' || c == '\n' || islasttoken)
         {
-            if (tmpi > 0) // a token
+            if (tokenIndex > 0)
             {
-                if (!needreg) // its an operator
+                if (!needreg)
                 {
-                    strtolower(tmp);
-                    sOp O = s_opinfo_find(tmp);
+                    // make it lower case
+                    for (word i = 0; i < tokenIndex; i++)
+                        token[i] = tolower(token[i]);
+
+                    sOp O = s_opinfo_find(token);
+                    if (O == S_OP_END)
+                    {
+                        printf("No such operator %s at %d\n", token, bcneededsize);
+                        return false;
+                    }
 
                     if (s_opinfo_hasreg(O))
-                    {
                         needreg = true;
-                        strcpy(tmp2, tmp);
-                        memset(tmp, 0, 128);
-                        tmpi = 0;
-                    }
-                    else
-                    {
-                        size_t sz = appendcode(&code, codesz, tmp, 0);
-                        if (sz > 0)
-                            codesz += sz;
-                        else return NULL;
 
-                        memset(tmp, 0, 128);
-                        tmpi = 0;
-                    }
+                    AST_[AST_count].op = O;
+                    AST_[AST_count++].hasreg = needreg;
+                    bcneededsize += 1;
+                    tokenIndex = 0;
+                    memset(token, 0, 128);
                 }
                 else
                 {
-                    word V = (word)atoi(tmp);
-                    word sz = appendcode(&code, codesz, tmp2, V);
-                    if (sz == 0)
-                        return NULL;
-                    codesz += sz;
-                    memset(tmp, 0, 128);
-                    memset(tmp2, 0, 128);
-                    tmpi = 0;
+                    // Checks if its a number
+                    for (word i = 0; i < tokenIndex; i++)
+                        if (!isdigit(token[i]))
+                        {
+                            printf("Invalid value %s at %d\n", token, bcneededsize);
+                            return false;
+                        }
+
                     needreg = false;
+                    AST_[AST_count - 1].reg = (word)atoi(token);
+                    bcneededsize += sizeof(word);
+                    tokenIndex = 0;
+                    memset(token, 0, 128);
                 }
             }
         }
-        if (isgraph(c))
-            tmp[tmpi++] = c;
+        else if (isgraph(c))
+            token[tokenIndex++] = c;
     }
 
-    *compilesz = codesz;
-    return code;
+    byte *bytecode = calloc(bcneededsize, sizeof *bytecode);
+    if (!bytecode)
+    {
+        printf("Bytecode allocation failed\n");
+        return false;
+    }
+
+    for (word i = 0, bi = 0; i < AST_count; i++)
+    {
+        bytecode[bi++] = AST_[i].op;
+        if (AST_[i].hasreg)
+        {
+            memcpy(bytecode + bi, &AST_[i].reg, sizeof(word));
+            bi += 2;
+        }
+    }
+
+    *pcompiled = bytecode;
+    *compiledsize = bcneededsize;
+
+    return true;
 }

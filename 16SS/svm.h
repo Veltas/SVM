@@ -19,8 +19,8 @@ typedef uint8_t byte;
 typedef uint16_t word;
 
 
-typedef struct sSegment_s sSegment;
-struct sSegment_s
+typedef struct sContext_s sContext;
+struct sContext_s
 {
     bool running;
     word opi;
@@ -38,45 +38,43 @@ struct sSegment_s
 typedef enum sOp_e sOp;
 enum sOp_e
 {
-    S_OP_END = 0,
-    S_OP_HALT,
-    S_OP_DMPBC,
-    S_OP_DMPBCN,
+    S_OP_END = 0,   // nothing
+    S_OP_HALT,      // stops running
+    S_OP_DUMPBC,    // dumps bytecode
+    S_OP_DUMPNBC,   // dumps nice bytecode
 
-    S_OP_SPUSH,
-    S_OP_SP,
-    S_OP_SPOP,
-    S_OP_SREV,
-    S_OP_SDMP,
-    S_OP_SDUP,
+    S_OP_SPUSH,     // <value> [push 1] push element on stack
+    S_OP_SP,        // <value> [push 1] alais for spush
+    S_OP_SPOP,      // [pop 1] pops the last element
+    S_OP_SREV,      // reverses the whole stack
+    S_OP_SREVN,     // <value> reverses top of the stack with given length
+    S_OP_SDMP,      // dumps the stack
+    S_OP_SDUP,      // [push 1] duplicates the last element on stack
 
-    S_OP_MADD,
-    S_OP_MSUB,
-    S_OP_MMUL,
-    S_OP_MDIV,
-    S_OP_INC,
-    S_OP_DEC,
+    S_OP_MADD,      // [pop 2, push 1] math add
+    S_OP_MSUB,      // [pop 2, push 1] math subtract
+    S_OP_MMUL,      // [pop 2, push 1] math multipy
+    S_OP_MDIV,      // [pop 2, push 1] math divide
 
-    S_OP_PUT,
-    S_OP_PUTC,
-    S_OP_PUTN,
-    S_OP_PUTNC,
-    S_OP_PUTALL,
-    S_OP_PUTALLC,
+    S_OP_INC,       // [pop 1, push 1] increase the last element if possible
+    S_OP_DEC,       // [pop 1, push 1] decrease the last element if possible
 
-    S_OP_CMPE,
-    S_OP_CMPG,
-    S_OP_CMPGE,
+    S_OP_XOR,       // [pop 2, push 1] bitwise xor
+    S_OP_AND,       // [pop 2, push 1] bitwise and
+    S_OP_OR,        // [pop 2, push 1] bitwise or
+    S_OP_NOT,       // [pop 1, push 1] bitwise not
 
-    S_OP_JMPBT,
-    S_OP_JMPBF,
-    S_OP_JMPB,
-    S_OP_JMPFT,
-    S_OP_JMPFF,
-    S_OP_JMPF,
-    S_OP_JMPTT,
-    S_OP_JMPTF,
-    S_OP_JMPT,
+    S_OP_PRINT,     // [pop 1] prints the last element on stack
+    S_OP_PRINTN,    // [pop n] prints count elements from stack
+
+    S_OP_CMPE,      // [pop 2, push 1] compare equal
+    S_OP_CMPG,      // [pop 2, push 1] compare greater
+    S_OP_CMPGE,     // [pop 2, push 1] compare equal or greater
+
+    S_OP_JUMP,      // <number> jump to offset
+    S_OP_JUMPT,     // <number> [pop 1] jump to offset if last element on stack is true
+    S_OP_JUMPF,     // <number> [pop 1] jump to offset if last element on stack is false
+    S_OP_LABEL,     // <number> <key> defines a label (Used by compiler only)
 
     S_OP__MAX__
 };
@@ -89,25 +87,25 @@ typedef struct sOpInfo_s
 
 
 // eval
-byte s_next(sSegment *C);
-word s_getv(sSegment *C);
-void s_eval(sSegment *C, byte op);
+byte s_next(sContext *C);
+word s_getv(sContext *C);
+void s_eval(sContext *C, byte op);
 
 // stack
-void s_push(sSegment *C, word v);
-word s_pop(sSegment *C);
-void s_reverse(sSegment *C);
+void s_push(sContext *C, word v);
+word s_pop(sContext *C);
+void s_reverse(sContext *C, bool manualcount, word N);
 
 // context
-sSegment* s_new();
-void s_segment_setprogram(sSegment *C, byte *program, word size);
+sContext* s_new();
+void s_context_setprogram(sContext *C, byte *program, word size);
 
 // util
-void s_addinst(sSegment *C, byte O, word V);
-void s_run(sSegment *C);
+void s_addinst(sContext *C, byte O, word V);
+void s_run(sContext *C);
 void s_vm_init();
 void s_dump_bytecode(byte *code, word sz, bool nice);
-void s_dump_stack(sSegment *S);
+void s_dump_stack(sContext *S);
 
 // opinfo
 sOpInfo* s_opinfo(sOp O);
@@ -116,7 +114,7 @@ char* s_opinfo_name(sOp O);
 sOp s_opinfo_find(char *name);
 
 // compiler
-byte* s_compile(char *program, word sz, word *compilesz);
+bool s_compile(char *program, word sz, byte **pcompiled, word *compiledsize);
 
 
 #endif
