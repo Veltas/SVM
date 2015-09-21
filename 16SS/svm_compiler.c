@@ -37,9 +37,9 @@ word appendcode(byte **code, word currsz, char *N, word V)
     }
 
     byte *c = *code;
-    c[currsz] = (byte)O;
+    c[currsz++] = (byte)O;
     if (s_opinfo_hasreg(O))
-        memcpy(c + currsz + 1, &V, sizeof V);
+        memcpy(c + currsz, &V, sizeof V);
 
     return newsize;
 }
@@ -92,7 +92,7 @@ byte* s_compile(char *program, word sz, word *compilesz)
                         size_t sz = appendcode(&code, codesz, tmp, 0);
                         if (sz > 0)
                             codesz += sz;
-                        else return 0;
+                        else return NULL;
 
                         memset(tmp, 0, 128);
                         tmpi = 0;

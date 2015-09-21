@@ -1,0 +1,18 @@
+
+spush 0
+
+sdup
+put
+
+sdup
+sp 100
+cmpge
+jmpft 3
+jmpff 4
+inc
+jmpt 3
+
+put
+
+sp 10 putc dmpbcn halt
+

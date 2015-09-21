@@ -22,11 +22,10 @@ void strreverse(char *str)
         str[i2] = tmp;
     }
 }
-
+#include <limits.h>
 int main(int argc, char *argv[])
 {
     s_vm_init();
-    sSegment *ctx = s_new();
 /*
     s_addinst(ctx, S_OP_PUSH, 99);
     s_addinst(ctx, S_OP_PUSH, 1);
@@ -41,10 +40,17 @@ int main(int argc, char *argv[])
     s_addinst(ctx, S_OP_PRINTC, 0);
     s_addinst(ctx, S_OP_HALT, 0); */
 
-    if (argc != 2)
+    if (argc < 2)
     {
-        printf("Usage: SVM16SS <filename>\n");
+        printf("Usage: SVM16SS <filename> [-c]\n");
         return 0;
+    }
+
+    bool compileonly = false;
+    if (argc == 3 && !strcmp(argv[2], "-c"))
+    {
+        printf("Compiling %s to %s.slc\n", argv[1], argv[1]);
+        compileonly = true;
     }
 
     char *buffer;
@@ -71,13 +77,43 @@ int main(int argc, char *argv[])
 
     word psz = 0;
     byte *bcode = s_compile(buffer, strlen(buffer), &psz);
+    free(buffer);
+
     if (!bcode)
     {
         puts("Couldnt compile");
         return 1;
     }
-    s_segment_setprogram(ctx, bcode, psz);
 
-    s_run(ctx);
+    if (!compileonly)
+    {
+        sSegment *seg = s_new();
+        s_segment_setprogram(seg, bcode, psz);
+        s_run(seg);
+        free(seg);
+    }
+    else
+    {
+        char *newfilename = calloc(strlen(argv[1]) + 5, sizeof(char));
+        if (!newfilename)
+        {
+            printf("Error\n");
+            return 0;
+        }
+        strcpy(newfilename, argv[1]);
+        strcat(newfilename, ".slc");
+        FILE *fw = fopen(newfilename, "wb");
+        free(newfilename);
+        if (!fw)
+        {
+            printf("Couldnt open file for write\n");
+            return 0;
+        }
+
+        fwrite(bcode, psz, sizeof(byte), fw);
+        fclose(fw);
+    }
+
+    free(bcode);
 	return 0;
 }

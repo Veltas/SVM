@@ -1,0 +1,12 @@
+
+
+spush 5100
+spush 16000
+spush 65000
+spush 12
+
+sdmp
+jmpt 0
+dmpbcn
+sp 10 putc halt
+

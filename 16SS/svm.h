@@ -30,23 +30,54 @@ struct sSegment_s
     word stack[STACK_SZ];
 };
 
+/*
+ * Each op should be defined here
+ *  op info should be added in s_vm_init in svm_util.c
+ *  op behavior should be added in s_eval in svm_eval.c
+ */
 typedef enum sOp_e sOp;
 enum sOp_e
 {
     S_OP_END = 0,
     S_OP_HALT,
+    S_OP_DMPBC,
+    S_OP_DMPBCN,
+
     S_OP_SPUSH,
     S_OP_SP,
     S_OP_SPOP,
     S_OP_SREV,
+    S_OP_SDMP,
+    S_OP_SDUP,
+
     S_OP_MADD,
     S_OP_MSUB,
     S_OP_MMUL,
     S_OP_MDIV,
+    S_OP_INC,
+    S_OP_DEC,
+
     S_OP_PUT,
     S_OP_PUTC,
-    S_OP_PRINT,
-    S_OP_PRINTC,
+    S_OP_PUTN,
+    S_OP_PUTNC,
+    S_OP_PUTALL,
+    S_OP_PUTALLC,
+
+    S_OP_CMPE,
+    S_OP_CMPG,
+    S_OP_CMPGE,
+
+    S_OP_JMPBT,
+    S_OP_JMPBF,
+    S_OP_JMPB,
+    S_OP_JMPFT,
+    S_OP_JMPFF,
+    S_OP_JMPF,
+    S_OP_JMPTT,
+    S_OP_JMPTF,
+    S_OP_JMPT,
+
     S_OP__MAX__
 };
 typedef struct sOpInfo_s
@@ -55,7 +86,6 @@ typedef struct sOpInfo_s
     bool hasreg;
     sOp op;
 } sOpInfo;
-
 
 
 // eval
@@ -76,7 +106,8 @@ void s_segment_setprogram(sSegment *C, byte *program, word size);
 void s_addinst(sSegment *C, byte O, word V);
 void s_run(sSegment *C);
 void s_vm_init();
-void s_dump_bytecode(byte *code, word sz);
+void s_dump_bytecode(byte *code, word sz, bool nice);
+void s_dump_stack(sSegment *S);
 
 // opinfo
 sOpInfo* s_opinfo(sOp O);
