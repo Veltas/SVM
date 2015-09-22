@@ -18,7 +18,7 @@ void s_vm_init()
     s_setopinfo_(S_OP_SPOP, "spop", false);
     s_setopinfo_(S_OP_SREV, "srev", false);
     s_setopinfo_(S_OP_SREVN, "srevn", true);
-    s_setopinfo_(S_OP_SDMP, "sdmp", false);
+    s_setopinfo_(S_OP_SDUMP, "sdump", false);
     s_setopinfo_(S_OP_SDUP, "sdup", false);
 
     s_setopinfo_(S_OP_MADD, "madd", false);
@@ -44,7 +44,12 @@ void s_vm_init()
     s_setopinfo_(S_OP_JUMP, "jump", true);
     s_setopinfo_(S_OP_JUMPT, "jumpt", true);
     s_setopinfo_(S_OP_JUMPF, "jumpf", true);
+
     s_setopinfo_(S_OP_LABEL, "label", true);
+    s_setopinfo_(S_OP_GOTO, "goto", true);
+    s_setopinfo_(S_OP_GOTOT, "gotot", true);
+    s_setopinfo_(S_OP_GOTOF, "gotof", true);
+
     //s_setopinfo_(S_OP_, "", false);
 }
 

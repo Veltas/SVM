@@ -4,6 +4,9 @@ sp 1
 sp 2
 sp 3
 sdup
+goto lol
 printn 2
+label lol
+sdump
 dumpnbc
 halt

@@ -48,7 +48,7 @@ void s_eval(sContext *C, byte op)
     case S_OP_SREVN:
         s_reverse(C, true, s_getv(C));
         break;
-    case S_OP_SDMP:
+    case S_OP_SDUMP:
         s_dump_stack(C);
         break;
     case S_OP_SDUP:
