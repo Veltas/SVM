@@ -1,12 +1,10 @@
-sp 65
-sp 66
+
 sp 1
-sp 2
-sp 3
+label inc
+inc
 sdup
-goto lol
-printn 2
-label lol
-sdump
-dumpnbc
+sp 4
+cmpge
+gotot inc
+label end
 halt

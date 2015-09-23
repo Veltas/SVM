@@ -2,9 +2,8 @@ Spirit Virtual Machine
 -----
 A simple virtual machine that is made for educational stuff!
 
-It will be in four kinds:
+It will be in three kinds:
 - 16SS 16 bit Simple Stack based
-- 16AS 16 bit Advanced Stack based
 - 32AS 32 bit Advanced Stack based
 - 32AR 32 bit Advanced Register based
 

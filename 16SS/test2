@@ -1,0 +1,9 @@
+sp 1
+inc
+goto print
+dec
+label print
+print
+sdump
+dumpnbc
+halt

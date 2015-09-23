@@ -141,15 +141,19 @@ void s_eval(sContext *C, byte op)
     }
         // ---------------------------------------------------
     case S_OP_JUMP:
-        C->opi = s_getv(C) - 1;
+        C->opi = s_getv(C);
         break;
     case S_OP_JUMPT:
         if (s_pop(C) != 0)
-            C->opi = s_getv(C) - 1;
+            C->opi = s_getv(C);
+        else
+            C->opi += 2;
         break;
     case S_OP_JUMPF:
         if (s_pop(C) == 0)
-            C->opi = s_getv(C) - 1;
+            C->opi = s_getv(C);
+        else
+            C->opi += 2;
         break;
         // ---------------------------------------------------
     default:

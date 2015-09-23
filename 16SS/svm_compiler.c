@@ -170,7 +170,7 @@ bool s_compile(char *program, word sz, byte **pcompiled, word *compiledsize)
 
             word offset = JumpTable_[j].offset;
             memcpy(bytecode + bi, &offset, sizeof(word));
-            bi += 2;
+            bi += sizeof(word);
         }
         else
         {
@@ -178,7 +178,7 @@ bool s_compile(char *program, word sz, byte **pcompiled, word *compiledsize)
             if (AST_[i].hasreg)
             {
                 memcpy(bytecode + bi, &AST_[i].reg, sizeof(word));
-                bi += 2;
+                bi += sizeof(word);
             }
         }
     }

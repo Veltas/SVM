@@ -16,7 +16,7 @@
 
 
 typedef uint8_t byte;
-typedef uint16_t word;
+typedef int16_t word;
 
 
 typedef struct sContext_s sContext;
