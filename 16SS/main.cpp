@@ -1,7 +1,4 @@
-//Main.c
-
-
-#include "svm.h"
+#include "svm.hpp"
 
 
 typedef enum
@@ -68,7 +65,7 @@ int main(int argc, char *argv[])
         fseek(fr, 0L, SEEK_END);
         long bufferlen = ftell(fr);
         rewind(fr);
-        buffer = calloc(bufferlen, sizeof *buffer);
+        buffer = reinterpret_cast<char *>(calloc(bufferlen, sizeof *buffer));
 
         if (!buffer)
         {
@@ -98,7 +95,7 @@ int main(int argc, char *argv[])
         fseek(fr, 0, SEEK_END);
         bcodesize = ftell(fr);
         rewind(fr);
-        bcode = calloc(bcodesize, sizeof *bcode);
+        bcode = reinterpret_cast<byte *>(calloc(bcodesize, sizeof *bcode));
         fread(bcode, bcodesize, sizeof *bcode, fr);
         fclose(fr);
     }
@@ -107,7 +104,7 @@ int main(int argc, char *argv[])
     {
     case ACT_Compile:
     {
-        char *newfilename = calloc(strlen(argv[1]) + 4, sizeof(char));
+        char *newfilename = reinterpret_cast<char *>(calloc(strlen(argv[1]) + 4, sizeof(char)));
         if (!newfilename)
         {
             printf("Allocation failed\n");

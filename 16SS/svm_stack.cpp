@@ -1,6 +1,4 @@
-// svm_stack.c
-
-#include "svm.h"
+#include "svm.hpp"
 
 
 

@@ -1,5 +1,3 @@
-// svm.h
-
 #if !defined(SVM_H_)
 #define SVM_H_
 
@@ -19,7 +17,6 @@ typedef uint8_t byte;
 typedef int16_t word;
 
 
-typedef struct sContext_s sContext;
 struct sContext_s
 {
     bool running;
@@ -29,13 +26,13 @@ struct sContext_s
     word stack_count;
     word stack[STACK_SZ];
 };
+typedef struct sContext_s sContext;
 
 /*
  * Each op should be defined here
  *  op info should be added in s_vm_init in svm_util.c
  *  op behavior should be added in s_eval in svm_eval.c
  */
-typedef enum sOp_e sOp;
 enum sOp_e
 {
     // VM
@@ -91,6 +88,7 @@ enum sOp_e
 
     S_OP__MAX__
 };
+typedef enum sOp_e sOp;
 typedef struct sOpInfo_s
 {
     char name[32];

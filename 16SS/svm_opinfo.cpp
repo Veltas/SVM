@@ -1,13 +1,10 @@
-// svm_opinfo.c
-
-
-#include "svm.h"
+#include "svm.hpp"
 
 
 static sOpInfo sOpInfoList[S_OP__MAX__] = {0};
 
 
-void s_setopinfo_(sOp O, char *name, bool hasreg)
+void s_setopinfo_(sOp O, const char *name, bool hasreg)
 {
     strcpy(sOpInfoList[O].name, name);
     sOpInfoList[O].hasreg = hasreg;

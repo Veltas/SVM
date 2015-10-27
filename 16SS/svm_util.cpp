@@ -1,11 +1,8 @@
-// svm_util.c
-
-
-#include "svm.h"
+#include "svm.hpp"
 #include <ctype.h>
 
 
-void s_setopinfo_(sOp O, char *name, bool hasreg);
+void s_setopinfo_(sOp O, const char *name, bool hasreg);
 void s_vm_init()
 {
     s_setopinfo_(S_OP_END, "end", false);
@@ -66,9 +63,9 @@ void s_run(sContext *C)
 void s_addinst(sContext *C, byte O, word V)
 {
     word newsize = 1;
-    if (s_opinfo_hasreg(O))
+    if (s_opinfo_hasreg(static_cast<sOp>(O)))
         newsize += sizeof(word);
-    byte *newbuff = calloc(C->code_size + newsize, 1);
+    byte *newbuff = reinterpret_cast<byte *>(calloc(C->code_size + newsize, 1));
 
     if (C->code && C->code_size > 0)
         memcpy(newbuff, C->code, C->code_size);
@@ -105,7 +102,7 @@ void s_dump_bytecode(byte *code, word sz, bool nice)
         // first calculate needed size
         for (word i = 0; i < sz; i++)
         {
-            sOp O = code[i];
+            sOp O = static_cast<sOp>(code[i]);
             opsz = strlen(s_opinfo_name(O));
             if (s_opinfo_hasreg(O))
             {
@@ -120,7 +117,7 @@ void s_dump_bytecode(byte *code, word sz, bool nice)
             buffersz++; // for newline
         }
 
-        char *buffer = calloc(buffersz, sizeof *buffer);
+        char *buffer = reinterpret_cast<char *>(calloc(buffersz, sizeof *buffer));
         if (!buffer) return;
 
         for (word i = 0; i < sz; i++)
@@ -132,7 +129,7 @@ void s_dump_bytecode(byte *code, word sz, bool nice)
             strncat(buffer, addr, addrsz - 1);   // address
             strcat(buffer, ":\t\t");  // spacing between address and op
 
-            sOp O = code[i];
+            sOp O = static_cast<sOp>(code[i]);
             opsz = strlen(s_opinfo_name(O));
             strncat(buffer, s_opinfo_name(O), opsz); // op name
             if (s_opinfo_hasreg(O)) // op register
@@ -158,7 +155,7 @@ void s_dump_bytecode(byte *code, word sz, bool nice)
 
 void s_dump_stack(sContext *S)
 {
-    char *buffer = calloc(S->stack_count * 6, sizeof(byte));
+    char *buffer = reinterpret_cast<char *>(calloc(S->stack_count * 6, sizeof(byte)));
     if (!buffer) return;
 
     for (word i = 0; i < S->stack_count; i++)

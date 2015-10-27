@@ -1,24 +1,21 @@
-// svm_compiler.c
-
-
-#include "svm.h"
+#include "svm.hpp"
 #include <ctype.h>
 
 
 static struct AST_s
 {
-    sOp op;
-    word reg;
-    bool hasreg;
-    char key[32];
-} AST_[512] = {0};
+    sOp op = static_cast<sOp>(0);
+    word reg = 0;
+    bool hasreg = false;
+    char key[32] = {0};
+} AST_[512];
 static word AST_count = 0;
 
 static struct JumpTable_s
 {
-    char key[32];
-    word offset;
-} JumpTable_[512] = {0};
+    char key[32] = {0};
+    word offset = 0;
+} JumpTable_[512];
 static word JumpTable_count = 0;
 
 bool s_compile(char *program, word sz, byte **pcompiled, word *compiledsize)
@@ -128,7 +125,7 @@ bool s_compile(char *program, word sz, byte **pcompiled, word *compiledsize)
             token[tokenIndex++] = c;
     }
 
-    byte *bytecode = calloc(bcneededsize, sizeof *bytecode);
+    byte *bytecode = reinterpret_cast<byte *>(calloc(bcneededsize, sizeof *bytecode));
     if (!bytecode)
     {
         printf("Bytecode allocation failed\n");
