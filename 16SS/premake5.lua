@@ -1,11 +1,11 @@
 solution"SVM16SS"
 configurations{"Debug"}
 project"SVM16SS"
-language"C"
+language"C++"
 architecture"x32"
 kind"ConsoleApp"
 defines{"DEBUG","_DEBUG"}
 flags{"Symbols"}
 optimize"Debug"
-buildoptions{"-std=c11"}
-files{"**.c"}
+buildoptions{"-std=c++14"}
+files{"**.cpp"}
