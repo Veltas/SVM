@@ -87,13 +87,24 @@ enum sOp
 
     S_OP__MAX__
 };
-struct sOpInfo
-{
-    char name[32];
-    bool hasreg;
-    sOp op;
-};
 
+class sOpInfo
+{
+public:
+    void set(sOp O, const char *name, bool hasreg);
+    bool hasreg(sOp O);
+    char* name(sOp O);
+    sOp find(char *name);
+    
+private:
+    struct
+    {
+        char name[32] = "";
+        bool hasreg = false;
+        sOp op = S_OP_END;
+    } m_opInfoList[S_OP__MAX__];
+};
+extern sOpInfo opInfo;
 
 // eval
 byte s_next(sContext *C);
@@ -115,12 +126,6 @@ void s_run(sContext *C);
 void s_vm_init();
 void s_dump_bytecode(byte *code, word sz, bool nice);
 void s_dump_stack(sContext *S);
-
-// opinfo
-sOpInfo* s_opinfo(sOp O);
-bool s_opinfo_hasreg(sOp O);
-char* s_opinfo_name(sOp O);
-sOp s_opinfo_find(char *name);
 
 // compiler
 bool s_compile(char *program, word sz, byte **pcompiled, word *compiledsize);

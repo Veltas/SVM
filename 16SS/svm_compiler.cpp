@@ -69,7 +69,7 @@ bool s_compile(char *program, word sz, byte **pcompiled, word *compiledsize)
                     for (word i = 0; i < tokenIndex; i++)
                         token[i] = tolower(token[i]);
 
-                    sOp O = s_opinfo_find(token);
+                    sOp O = opInfo.find(token);
 
                     switch (O)
                     {
@@ -88,7 +88,7 @@ bool s_compile(char *program, word sz, byte **pcompiled, word *compiledsize)
                         break;
                     }
 
-                    if (s_opinfo_hasreg(O))
+                    if (opInfo.hasreg(O))
                         needreg = true;
 
                     AST_[AST_count].op = O;

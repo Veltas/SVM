@@ -1,39 +1,31 @@
 #include "svm.hpp"
 
 
-namespace
+sOpInfo opInfo;
+
+
+void sOpInfo::set(sOp O, const char *name, bool hasreg)
 {
-    sOpInfo sOpInfoList[S_OP__MAX__] = {0};
+    strcpy(m_opInfoList[O].name, name);
+    m_opInfoList[O].hasreg = hasreg;
+    m_opInfoList[O].op = O;
 }
 
 
-void s_setopinfo_(sOp O, const char *name, bool hasreg)
+bool sOpInfo::hasreg(sOp O)
 {
-    strcpy(sOpInfoList[O].name, name);
-    sOpInfoList[O].hasreg = hasreg;
-    sOpInfoList[O].op = O;
+    return m_opInfoList[O].hasreg;
 }
 
-
-sOpInfo* s_opinfo(sOp O)
+char* sOpInfo::name(sOp O)
 {
-    return &sOpInfoList[O];
+    return m_opInfoList[O].name;
 }
 
-bool s_opinfo_hasreg(sOp O)
-{
-    return sOpInfoList[O].hasreg;
-}
-
-char* s_opinfo_name(sOp O)
-{
-    return sOpInfoList[O].name;
-}
-
-sOp s_opinfo_find(char *name)
+sOp sOpInfo::find(char *name)
 {
     for (word i = 0; i < S_OP__MAX__; i++)
-        if (!strcmp(sOpInfoList[i].name, name))
-            return sOpInfoList[i].op;
+        if (!strcmp(m_opInfoList[i].name, name))
+            return m_opInfoList[i].op;
     return S_OP_END;
 }

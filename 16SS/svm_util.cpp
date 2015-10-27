@@ -2,52 +2,51 @@
 #include <ctype.h>
 
 
-void s_setopinfo_(sOp O, const char *name, bool hasreg);
 void s_vm_init()
 {
-    s_setopinfo_(S_OP_END, "end", false);
-    s_setopinfo_(S_OP_HALT, "halt", false);
-    s_setopinfo_(S_OP_DUMPBC, "dumpbc", false);
-    s_setopinfo_(S_OP_DUMPNBC, "dumpnbc", false);
+    opInfo.set(S_OP_END, "end", false);
+    opInfo.set(S_OP_HALT, "halt", false);
+    opInfo.set(S_OP_DUMPBC, "dumpbc", false);
+    opInfo.set(S_OP_DUMPNBC, "dumpnbc", false);
 
-    s_setopinfo_(S_OP_SPUSH, "spush", true);
-    s_setopinfo_(S_OP_SP, "sp", true);
-    s_setopinfo_(S_OP_SPOP, "spop", false);
-    s_setopinfo_(S_OP_SREV, "srev", false);
-    s_setopinfo_(S_OP_SREVN, "srevn", true);
-    s_setopinfo_(S_OP_SDUMP, "sdump", false);
-    s_setopinfo_(S_OP_SDUP, "sdup", false);
+    opInfo.set(S_OP_SPUSH, "spush", true);
+    opInfo.set(S_OP_SP, "sp", true);
+    opInfo.set(S_OP_SPOP, "spop", false);
+    opInfo.set(S_OP_SREV, "srev", false);
+    opInfo.set(S_OP_SREVN, "srevn", true);
+    opInfo.set(S_OP_SDUMP, "sdump", false);
+    opInfo.set(S_OP_SDUP, "sdup", false);
 
-    s_setopinfo_(S_OP_MADD, "madd", false);
-    s_setopinfo_(S_OP_MSUB, "msub", false);
-    s_setopinfo_(S_OP_MMUL, "mmul", false);
-    s_setopinfo_(S_OP_MDIV, "mdiv", false);
+    opInfo.set(S_OP_MADD, "madd", false);
+    opInfo.set(S_OP_MSUB, "msub", false);
+    opInfo.set(S_OP_MMUL, "mmul", false);
+    opInfo.set(S_OP_MDIV, "mdiv", false);
 
-    s_setopinfo_(S_OP_INC, "inc", false);
-    s_setopinfo_(S_OP_DEC, "dec", false);
+    opInfo.set(S_OP_INC, "inc", false);
+    opInfo.set(S_OP_DEC, "dec", false);
 
-    s_setopinfo_(S_OP_XOR, "xor", false);
-    s_setopinfo_(S_OP_AND, "and", false);
-    s_setopinfo_(S_OP_OR, "or", false);
-    s_setopinfo_(S_OP_NOT, "not", false);
+    opInfo.set(S_OP_XOR, "xor", false);
+    opInfo.set(S_OP_AND, "and", false);
+    opInfo.set(S_OP_OR, "or", false);
+    opInfo.set(S_OP_NOT, "not", false);
 
-    s_setopinfo_(S_OP_PRINT, "print", false);
-    s_setopinfo_(S_OP_PRINTN, "printn", true);
+    opInfo.set(S_OP_PRINT, "print", false);
+    opInfo.set(S_OP_PRINTN, "printn", true);
 
-    s_setopinfo_(S_OP_CMPE, "cmpe", false);
-    s_setopinfo_(S_OP_CMPG, "cmpg", false);
-    s_setopinfo_(S_OP_CMPGE, "cmpge", false);
+    opInfo.set(S_OP_CMPE, "cmpe", false);
+    opInfo.set(S_OP_CMPG, "cmpg", false);
+    opInfo.set(S_OP_CMPGE, "cmpge", false);
 
-    s_setopinfo_(S_OP_JUMP, "jump", true);
-    s_setopinfo_(S_OP_JUMPT, "jumpt", true);
-    s_setopinfo_(S_OP_JUMPF, "jumpf", true);
+    opInfo.set(S_OP_JUMP, "jump", true);
+    opInfo.set(S_OP_JUMPT, "jumpt", true);
+    opInfo.set(S_OP_JUMPF, "jumpf", true);
 
-    s_setopinfo_(S_OP_LABEL, "label", true);
-    s_setopinfo_(S_OP_GOTO, "goto", true);
-    s_setopinfo_(S_OP_GOTOT, "gotot", true);
-    s_setopinfo_(S_OP_GOTOF, "gotof", true);
+    opInfo.set(S_OP_LABEL, "label", true);
+    opInfo.set(S_OP_GOTO, "goto", true);
+    opInfo.set(S_OP_GOTOT, "gotot", true);
+    opInfo.set(S_OP_GOTOF, "gotof", true);
 
-    //s_setopinfo_(S_OP_, "", false);
+    //opInfo.set(S_OP_, "", false);
 }
 
 void s_run(sContext *C)
@@ -63,7 +62,7 @@ void s_run(sContext *C)
 void s_addinst(sContext *C, byte O, word V)
 {
     word newsize = 1;
-    if (s_opinfo_hasreg(static_cast<sOp>(O)))
+    if (opInfo.hasreg(static_cast<sOp>(O)))
         newsize += sizeof(word);
     byte *newbuff = reinterpret_cast<byte *>(calloc(C->code_size + newsize, 1));
 
@@ -103,8 +102,8 @@ void s_dump_bytecode(byte *code, word sz, bool nice)
         for (word i = 0; i < sz; i++)
         {
             sOp O = static_cast<sOp>(code[i]);
-            opsz = strlen(s_opinfo_name(O));
-            if (s_opinfo_hasreg(O))
+            opsz = strlen(opInfo.name(O));
+            if (opInfo.hasreg(O))
             {
                 buffersz += regsz;
                 buffersz += spacebtwopandreg;
@@ -130,9 +129,9 @@ void s_dump_bytecode(byte *code, word sz, bool nice)
             strcat(buffer, ":\t\t");  // spacing between address and op
 
             sOp O = static_cast<sOp>(code[i]);
-            opsz = strlen(s_opinfo_name(O));
-            strncat(buffer, s_opinfo_name(O), opsz); // op name
-            if (s_opinfo_hasreg(O)) // op register
+            opsz = strlen(opInfo.name(O));
+            strncat(buffer, opInfo.name(O), opsz); // op name
+            if (opInfo.hasreg(O)) // op register
             {
                 strcat(buffer, "\t\t");
 
