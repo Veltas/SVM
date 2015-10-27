@@ -2,20 +2,22 @@
 
 
 
-void s_push(sContext *C, word v)
+namespace svm {
+
+void push(Context *C, word v)
 {
     if (C->stack_count < STACK_SZ)
         C->stack[C->stack_count++] = v;
 }
 
-word s_pop(sContext *C)
+word pop(Context *C)
 {
     if (C->stack_count > 0)
         return C->stack[--C->stack_count];
     return 0;
 }
 
-void s_reverse(sContext *C, bool manualcount, word N)
+void reverse(Context *C, bool manualcount, word N)
 {
     if (!manualcount)
         for (word i = 0; i < C->stack_count / 2; i++)
@@ -33,3 +35,5 @@ void s_reverse(sContext *C, bool manualcount, word N)
             C->stack[j] = t;
         }
 }
+
+} // namespace svm

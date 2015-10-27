@@ -1,12 +1,14 @@
 #include "svm.hpp"
 
 
-byte s_next(sContext *C)
+namespace svm {
+
+byte next(Context *C)
 {
     return C->code[C->opi++];
 }
 
-word s_getv(sContext *C)
+word getv(Context *C)
 {
     size_t sz = sizeof(word);
     word w;
@@ -15,140 +17,140 @@ word s_getv(sContext *C)
     return w;
 }
 
-void s_eval(sContext *C, byte op)
+void eval(Context *C, byte op)
 {
     switch(op)
     {
-    case S_OP_HALT:
+    case OP_HALT:
         C->running = false;
         break;
-    case S_OP_DUMPBC:
-        s_dump_bytecode(C->code, C->code_size, false);
+    case OP_DUMPBC:
+        dump_bytecode(C->code, C->code_size, false);
         break;
-    case S_OP_DUMPNBC:
-        s_dump_bytecode(C->code, C->code_size, true);
-        break;
-        // ---------------------------------------------------
-    case S_OP_SP:
-    case S_OP_SPUSH:
-    {
-        word v = s_getv(C);
-        s_push(C, v);
-        break;
-    }
-    case S_OP_SPOP:
-        s_pop(C);
-        break;
-    case S_OP_SREV:
-        s_reverse(C, false, 0);
-        break;
-    case S_OP_SREVN:
-        s_reverse(C, true, s_getv(C));
-        break;
-    case S_OP_SDUMP:
-        s_dump_stack(C);
-        break;
-    case S_OP_SDUP:
-        s_push(C, C->stack[C->stack_count - 1]);
+    case OP_DUMPNBC:
+        dump_bytecode(C->code, C->code_size, true);
         break;
         // ---------------------------------------------------
-    case S_OP_MADD:
+    case OP_SP:
+    case OP_SPUSH:
     {
-        word v1 = s_pop(C);
-        s_push(C, v1 + s_pop(C));
+        word v = getv(C);
+        push(C, v);
         break;
     }
-    case S_OP_MSUB:
+    case OP_SPOP:
+        pop(C);
+        break;
+    case OP_SREV:
+        reverse(C, false, 0);
+        break;
+    case OP_SREVN:
+        reverse(C, true, getv(C));
+        break;
+    case OP_SDUMP:
+        dump_stack(C);
+        break;
+    case OP_SDUP:
+        push(C, C->stack[C->stack_count - 1]);
+        break;
+        // ---------------------------------------------------
+    case OP_MADD:
     {
-        word v1 = s_pop(C);
-        s_push(C, v1 - s_pop(C));
+        word v1 = pop(C);
+        push(C, v1 + pop(C));
         break;
     }
-    case S_OP_MDIV:
+    case OP_MSUB:
     {
-        word v1 = s_pop(C);
-        s_push(C, v1 / s_pop(C));
+        word v1 = pop(C);
+        push(C, v1 - pop(C));
         break;
     }
-    case S_OP_MMUL:
+    case OP_MDIV:
     {
-        word v1 = s_pop(C);
-        s_push(C, v1 * s_pop(C));
+        word v1 = pop(C);
+        push(C, v1 / pop(C));
+        break;
+    }
+    case OP_MMUL:
+    {
+        word v1 = pop(C);
+        push(C, v1 * pop(C));
         break;
     }
         // ---------------------------------------------------
-    case S_OP_INC:
-        s_push(C, s_pop(C) + 1);
+    case OP_INC:
+        push(C, pop(C) + 1);
         break;
-    case S_OP_DEC:
-        s_push(C, s_pop(C) - 1);
-        break;
-        // ---------------------------------------------------
-    case S_OP_XOR:
-    {
-        word v = s_pop(C);
-        s_push(C, v ^ s_pop(C));
-        break;
-    }
-    case S_OP_AND:
-    {
-        word v = s_pop(C);
-        s_push(C, v & s_pop(C));
-        break;
-    }
-    case S_OP_OR:
-    {
-        word v = s_pop(C);
-        s_push(C, v | s_pop(C));
-        break;
-    }
-    case S_OP_NOT:
-        s_push(C, ~s_pop(C));
+    case OP_DEC:
+        push(C, pop(C) - 1);
         break;
         // ---------------------------------------------------
-    case S_OP_PRINT:
-        printf("%d", s_pop(C));
-        break;
-    case S_OP_PRINTN:
+    case OP_XOR:
     {
-        word count = s_getv(C);
+        word v = pop(C);
+        push(C, v ^ pop(C));
+        break;
+    }
+    case OP_AND:
+    {
+        word v = pop(C);
+        push(C, v & pop(C));
+        break;
+    }
+    case OP_OR:
+    {
+        word v = pop(C);
+        push(C, v | pop(C));
+        break;
+    }
+    case OP_NOT:
+        push(C, ~pop(C));
+        break;
+        // ---------------------------------------------------
+    case OP_PRINT:
+        printf("%d", pop(C));
+        break;
+    case OP_PRINTN:
+    {
+        word count = getv(C);
         while (count-- != 0)
         {
-            printf("%d", s_pop(C));
+            printf("%d", pop(C));
         }
     }
         // ---------------------------------------------------
-    case S_OP_CMPE:
+    case OP_CMPE:
     {
-        word v = s_pop(C);
-        (v == s_pop(C) ? s_push(C, 1) : s_push(C, 0));
+        word v = pop(C);
+        (v == pop(C) ? push(C, 1) : push(C, 0));
         break;
     }
-    case S_OP_CMPG:
+    case OP_CMPG:
     {
-        word v = s_pop(C);
-        (v > s_pop(C) ? s_push(C, 1) : s_push(C, 0));
+        word v = pop(C);
+        (v > pop(C) ? push(C, 1) : push(C, 0));
         break;
     }
-    case S_OP_CMPGE:
+    case OP_CMPGE:
     {
-        word v = s_pop(C);
-        (v >= s_pop(C) ? s_push(C, 1) : s_push(C, 0));
+        word v = pop(C);
+        (v >= pop(C) ? push(C, 1) : push(C, 0));
         break;
     }
         // ---------------------------------------------------
-    case S_OP_JUMP:
-        C->opi = s_getv(C);
+    case OP_JUMP:
+        C->opi = getv(C);
         break;
-    case S_OP_JUMPT:
-        if (s_pop(C) != 0)
-            C->opi = s_getv(C);
+    case OP_JUMPT:
+        if (pop(C) != 0)
+            C->opi = getv(C);
         else
             C->opi += 2;
         break;
-    case S_OP_JUMPF:
-        if (s_pop(C) == 0)
-            C->opi = s_getv(C);
+    case OP_JUMPF:
+        if (pop(C) == 0)
+            C->opi = getv(C);
         else
             C->opi += 2;
         break;
@@ -157,3 +159,5 @@ void s_eval(sContext *C, byte op)
         break;
     }
 }
+
+} // namespace svm

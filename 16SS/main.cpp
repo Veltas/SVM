@@ -11,7 +11,7 @@ enum class Action
 
 int main(int argc, char *argv[])
 {
-    s_vm_init();
+    svm::vm_init();
 
     Action act;
     bool isbytecode = false;
@@ -49,8 +49,8 @@ int main(int argc, char *argv[])
     }
     else act = Action::Run;
 
-    word bcodesize = 0;
-    byte *bcode;
+    svm::word bcodesize = 0;
+    svm::byte *bcode;
 
     if (!isbytecode)
     {
@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
         fread(buffer, bufferlen, sizeof *buffer, fr);
         fclose(fr);
 
-        if (!s_compile(buffer, bufferlen, &bcode, &bcodesize))
+        if (!svm::compile(buffer, bufferlen, &bcode, &bcodesize))
         {
             puts("Compilation failed\n");
             free(buffer);
@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
         fseek(fr, 0, SEEK_END);
         bcodesize = ftell(fr);
         rewind(fr);
-        bcode = reinterpret_cast<byte *>(calloc(bcodesize, sizeof *bcode));
+        bcode = reinterpret_cast<svm::byte *>(calloc(bcodesize, sizeof *bcode));
         fread(bcode, bcodesize, sizeof *bcode, fr);
         fclose(fr);
     }
@@ -128,13 +128,13 @@ int main(int argc, char *argv[])
         break;
     }
     case Action::Dump:
-        s_dump_bytecode(bcode, bcodesize, true);
+        svm::dump_bytecode(bcode, bcodesize, true);
         break;
     case Action::Run:
     {
-        sContext *ctx = s_new();
-        s_context_setprogram(ctx, bcode, bcodesize);
-        s_run(ctx);
+        svm::Context *ctx = svm::newcontext();
+        svm::context_setprogram(ctx, bcode, bcodesize);
+        svm::run(ctx);
         free(ctx);
         break;
     }

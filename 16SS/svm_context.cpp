@@ -1,9 +1,11 @@
 #include "svm.hpp"
 
 
-sContext* s_new()
+namespace svm {
+
+Context* newcontext()
 {
-    sContext *ctx = reinterpret_cast<sContext *>(calloc(1, sizeof *ctx));
+    Context *ctx = reinterpret_cast<Context *>(calloc(1, sizeof *ctx));
     if (!ctx) return NULL;
 
     ctx->running = false;
@@ -15,10 +17,12 @@ sContext* s_new()
     return ctx;
 }
 
-void s_context_setprogram(sContext *C, byte *program, word size)
+void context_setprogram(Context *C, byte *program, word size)
 {
     if (C->code_size == 0)
         C->code = reinterpret_cast<byte *>(calloc(size, sizeof(byte)));
     memcpy(C->code, program, size);
     C->code_size = size;
 }
+
+} // namespace svm

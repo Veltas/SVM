@@ -2,11 +2,13 @@
 #include <ctype.h>
 
 
+namespace svm {
+
 namespace
 {
     struct AST_s
     {
-        sOp op = static_cast<sOp>(0);
+        Op op = static_cast<Op>(0);
         word reg = 0;
         bool hasreg = false;
         char key[32] = {0};
@@ -21,7 +23,7 @@ namespace
     word JumpTable_count = 0;
 }
 
-bool s_compile(char *program, word sz, byte **pcompiled, word *compiledsize)
+bool compile(char *program, word sz, byte **pcompiled, word *compiledsize)
 {
     char token[32] = {0};
     word tokenIndex = 0;
@@ -52,7 +54,7 @@ bool s_compile(char *program, word sz, byte **pcompiled, word *compiledsize)
             if (tokenIndex > 0)
             {
                 if (islabel)
-                {
+               {
                     memset(JumpTable_[JumpTable_count].key, 0, 32);
                     strcpy(JumpTable_[JumpTable_count].key, token);
                     JumpTable_[JumpTable_count++].offset = bcneededsize;
@@ -69,21 +71,21 @@ bool s_compile(char *program, word sz, byte **pcompiled, word *compiledsize)
                     for (word i = 0; i < tokenIndex; i++)
                         token[i] = tolower(token[i]);
 
-                    sOp O = opInfo.find(token);
+                    Op O = opInfo.find(token);
 
                     switch (O)
                     {
-                    case S_OP_END:
+                    case OP_END:
                         printf("No such operator %s at %d\n", token, bcneededsize);
                         return false;
-                    case S_OP_LABEL:
+                    case OP_LABEL:
                         islabel = true;
                         tokenIndex = 0;
                         memset(token, 0, sizeof token);
                         continue;
-                    case S_OP_GOTO:
-                    case S_OP_GOTOT:
-                    case S_OP_GOTOF:
+                    case OP_GOTO:
+                    case OP_GOTOT:
+                    case OP_GOTOF:
                         isgoto = true;
                         break;
                     }
@@ -137,7 +139,7 @@ bool s_compile(char *program, word sz, byte **pcompiled, word *compiledsize)
 
     for (word i = 0, bi = 0; i < AST_count; i++)
     {
-        if (AST_[i].op >= S_OP_GOTO && AST_[i].op <= S_OP_GOTOF)
+        if (AST_[i].op >= OP_GOTO && AST_[i].op <= OP_GOTOF)
         {
             bool found = false;
             word j = 0;
@@ -157,14 +159,14 @@ bool s_compile(char *program, word sz, byte **pcompiled, word *compiledsize)
 
             switch (AST_[i].op)
             {
-            case S_OP_GOTO:
-                bytecode[bi++] = S_OP_JUMP;
+            case OP_GOTO:
+                bytecode[bi++] = OP_JUMP;
                 break;
-            case S_OP_GOTOT:
-                bytecode[bi++] = S_OP_JUMPT;
+            case OP_GOTOT:
+                bytecode[bi++] = OP_JUMPT;
                 break;
-            case S_OP_GOTOF:
-                bytecode[bi++] = S_OP_JUMPF;
+            case OP_GOTOF:
+                bytecode[bi++] = OP_JUMPF;
                 break;
             }
 
@@ -188,3 +190,5 @@ bool s_compile(char *program, word sz, byte **pcompiled, word *compiledsize)
 
     return true;
 }
+
+} // namespace svm

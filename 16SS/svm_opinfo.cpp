@@ -1,10 +1,12 @@
 #include "svm.hpp"
 
 
-sOpInfo opInfo;
+namespace svm {
+
+OpInfo opInfo;
 
 
-void sOpInfo::set(sOp O, const char *name, bool hasreg)
+void OpInfo::set(Op O, const char *name, bool hasreg)
 {
     strcpy(m_opInfoList[O].name, name);
     m_opInfoList[O].hasreg = hasreg;
@@ -12,20 +14,22 @@ void sOpInfo::set(sOp O, const char *name, bool hasreg)
 }
 
 
-bool sOpInfo::hasreg(sOp O)
+bool OpInfo::hasreg(Op O)
 {
     return m_opInfoList[O].hasreg;
 }
 
-char* sOpInfo::name(sOp O)
+char* OpInfo::name(Op O)
 {
     return m_opInfoList[O].name;
 }
 
-sOp sOpInfo::find(char *name)
+Op OpInfo::find(char *name)
 {
-    for (word i = 0; i < S_OP__MAX__; i++)
+    for (word i = 0; i < OP__MAX__; i++)
         if (!strcmp(m_opInfoList[i].name, name))
             return m_opInfoList[i].op;
-    return S_OP_END;
+    return OP_END;
 }
+
+} // namespace svm
