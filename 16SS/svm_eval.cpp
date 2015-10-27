@@ -35,107 +35,107 @@ void Context::eval(byte op)
     case Op::SPUSH:
     {
         word v = getv();
-        push(this, v);
+        push(v);
         break;
     }
     case Op::SPOP:
-        pop(this);
+        pop();
         break;
     case Op::SREV:
-        reverse(this, false, 0);
+        reverse(false, 0);
         break;
     case Op::SREVN:
-        reverse(this, true, getv());
+        reverse(true, getv());
         break;
     case Op::SDUMP:
         dump_stack(this);
         break;
     case Op::SDUP:
-        push(this, stack[stack_count - 1]);
+        push(stack[stack_count - 1]);
         break;
         // ---------------------------------------------------
     case Op::MADD:
     {
-        word v1 = pop(this);
-        push(this, v1 + pop(this));
+        word v1 = pop();
+        push(v1 + pop());
         break;
     }
     case Op::MSUB:
     {
-        word v1 = pop(this);
-        push(this, v1 - pop(this));
+        word v1 = pop();
+        push(v1 - pop());
         break;
     }
     case Op::MDIV:
     {
-        word v1 = pop(this);
-        push(this, v1 / pop(this));
+        word v1 = pop();
+        push(v1 / pop());
         break;
     }
     case Op::MMUL:
     {
-        word v1 = pop(this);
-        push(this, v1 * pop(this));
+        word v1 = pop();
+        push(v1 * pop());
         break;
     }
         // ---------------------------------------------------
     case Op::INC:
-        push(this, pop(this) + 1);
+        push(pop() + 1);
         break;
     case Op::DEC:
-        push(this, pop(this) - 1);
+        push(pop() - 1);
         break;
         // ---------------------------------------------------
     case Op::XOR:
     {
-        word v = pop(this);
-        push(this, v ^ pop(this));
+        word v = pop();
+        push(v ^ pop());
         break;
     }
     case Op::AND:
     {
-        word v = pop(this);
-        push(this, v & pop(this));
+        word v = pop();
+        push(v & pop());
         break;
     }
     case Op::OR:
     {
-        word v = pop(this);
-        push(this, v | pop(this));
+        word v = pop();
+        push(v | pop());
         break;
     }
     case Op::NOT:
-        push(this, ~pop(this));
+        push(~pop());
         break;
         // ---------------------------------------------------
     case Op::PRINT:
-        printf("%d", pop(this));
+        printf("%d", pop());
         break;
     case Op::PRINTN:
     {
         word count = getv();
         while (count-- != 0)
         {
-            printf("%d", pop(this));
+            printf("%d", pop());
         }
     }
         // ---------------------------------------------------
     case Op::CMPE:
     {
-        word v = pop(this);
-        (v == pop(this) ? push(this, 1) : push(this, 0));
+        word v = pop();
+        (v == pop() ? push(1) : push(0));
         break;
     }
     case Op::CMPG:
     {
-        word v = pop(this);
-        (v > pop(this) ? push(this, 1) : push(this, 0));
+        word v = pop();
+        (v > pop() ? push(1) : push(0));
         break;
     }
     case Op::CMPGE:
     {
-        word v = pop(this);
-        (v >= pop(this) ? push(this, 1) : push(this, 0));
+        word v = pop();
+        (v >= pop() ? push(1) : push(0));
         break;
     }
         // ---------------------------------------------------
@@ -143,13 +143,13 @@ void Context::eval(byte op)
         opi = getv();
         break;
     case Op::JUMPT:
-        if (pop(this) != 0)
+        if (pop() != 0)
             opi = getv();
         else
             opi += 2;
         break;
     case Op::JUMPF:
-        if (pop(this) == 0)
+        if (pop() == 0)
             opi = getv();
         else
             opi += 2;

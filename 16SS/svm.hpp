@@ -114,13 +114,13 @@ struct Context
     byte next();
     word getv();
     void eval(byte op);
+
+    // stack
+    void push(word v);
+    word pop();
+    void reverse(bool manualcount, word N);
 };
 
-
-// stack
-void push(Context *C, word v);
-word pop(Context *C);
-void reverse(Context *C, bool manualcount, word N);
 
 // util
 void addinst(Context *C, byte O, word V);
