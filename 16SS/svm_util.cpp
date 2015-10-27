@@ -56,8 +56,8 @@ void run(Context *C)
     C->running = true;
     while (C->running)
     {
-        byte op = next(C);
-        eval(C, op);
+        byte op = C->next();
+        C->eval(op);
     }
 }
 

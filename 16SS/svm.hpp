@@ -109,12 +109,13 @@ struct Context
 
     void setprogram(byte *program, word size);
     ~Context();
+
+    // eval
+    byte next();
+    word getv();
+    void eval(byte op);
 };
 
-// eval
-byte next(Context *C);
-word getv(Context *C);
-void eval(Context *C, byte op);
 
 // stack
 void push(Context *C, word v);
