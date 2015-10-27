@@ -3,26 +3,17 @@
 
 namespace svm {
 
-Context* newcontext()
+void Context::setprogram(byte *program, word size)
 {
-    Context *ctx = reinterpret_cast<Context *>(calloc(1, sizeof *ctx));
-    if (!ctx) return NULL;
-
-    ctx->running = false;
-    ctx->code = NULL;
-    ctx->stack_count = 0;
-    ctx->code_size = 0;
-    ctx->opi = 0;
-
-    return ctx;
+    if (code_size == 0)
+        code = reinterpret_cast<byte *>(calloc(size, sizeof(byte)));
+    memcpy(code, program, size);
+    code_size = size;
 }
 
-void context_setprogram(Context *C, byte *program, word size)
+Context::~Context()
 {
-    if (C->code_size == 0)
-        C->code = reinterpret_cast<byte *>(calloc(size, sizeof(byte)));
-    memcpy(C->code, program, size);
-    C->code_size = size;
+    free(code);
 }
 
 } // namespace svm

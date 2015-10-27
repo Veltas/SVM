@@ -132,10 +132,9 @@ int main(int argc, char *argv[])
         break;
     case Action::Run:
     {
-        svm::Context *ctx = svm::newcontext();
-        svm::context_setprogram(ctx, bcode, bcodesize);
-        svm::run(ctx);
-        free(ctx);
+        svm::Context ctx;
+        ctx.setprogram(bcode, bcodesize);
+        svm::run(&ctx);
         break;
     }
     }

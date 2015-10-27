@@ -21,12 +21,15 @@ typedef int16_t word;
 
 struct Context
 {
-    bool running;
-    word opi;
-    word code_size;
-    byte *code;
-    word stack_count;
-    word stack[STACK_SZ];
+    bool running = false;
+    word opi = 0;
+    word code_size = 0;
+    byte *code = NULL;
+    word stack_count = 0;
+    word stack[STACK_SZ] = {0};
+
+    void setprogram(byte *program, word size);
+    ~Context();
 };
 
 /*
@@ -117,10 +120,6 @@ void eval(Context *C, byte op);
 void push(Context *C, word v);
 word pop(Context *C);
 void reverse(Context *C, bool manualcount, word N);
-
-// context
-Context* newcontext();
-void context_setprogram(Context *C, byte *program, word size);
 
 // util
 void addinst(Context *C, byte O, word V);
