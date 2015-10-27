@@ -10,7 +10,7 @@
 #include <string.h>
 
 
-#define STACK_SZ 128
+constexpr int stackSz = 128;
 
 
 namespace svm {
@@ -105,7 +105,7 @@ struct Context
     word code_size = 0;
     byte *code = nullptr;
     word stack_count = 0;
-    word stack[STACK_SZ] = {0};
+    word stack[stackSz] = {0};
 
     void setprogram(byte *program, word size);
     ~Context();

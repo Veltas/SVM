@@ -6,7 +6,7 @@ namespace svm {
 
 void push(Context *C, word v)
 {
-    if (C->stack_count < STACK_SZ)
+    if (C->stack_count < stackSz)
         C->stack[C->stack_count++] = v;
 }
 
