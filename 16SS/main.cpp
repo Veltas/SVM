@@ -1,11 +1,11 @@
 #include "svm.hpp"
 
 
-enum Action
+enum class Action
 {
-    ACT_Compile,
-    ACT_Run,
-    ACT_Dump,
+    Compile,
+    Run,
+    Dump,
 };
 
 
@@ -35,11 +35,11 @@ int main(int argc, char *argv[])
                 return 0;
             }
             printf("Compiling %s to %s.sc\n", argv[1], argv[1]);
-            act = ACT_Compile;
+            act = Action::Compile;
         }
         else if (!strcmp(argv[2], "-d"))
         {
-            act = ACT_Dump;
+            act = Action::Dump;
         }
         else
         {
@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
             return 0;
         }
     }
-    else act = ACT_Run;
+    else act = Action::Run;
 
     word bcodesize = 0;
     byte *bcode;
@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
 
     switch (act)
     {
-    case ACT_Compile:
+    case Action::Compile:
     {
         char *newfilename = reinterpret_cast<char *>(calloc(strlen(argv[1]) + 4, sizeof(char)));
         if (!newfilename)
@@ -127,10 +127,10 @@ int main(int argc, char *argv[])
         fclose(fw);
         break;
     }
-    case ACT_Dump:
+    case Action::Dump:
         s_dump_bytecode(bcode, bcodesize, true);
         break;
-    case ACT_Run:
+    case Action::Run:
     {
         sContext *ctx = s_new();
         s_context_setprogram(ctx, bcode, bcodesize);
