@@ -141,6 +141,4 @@ int main(int argc, char *argv[])
     }
 
     free(bcode);
-
-    return 0;
 }
