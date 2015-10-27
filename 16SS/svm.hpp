@@ -24,7 +24,7 @@ struct Context
     bool running = false;
     word opi = 0;
     word code_size = 0;
-    byte *code = NULL;
+    byte *code = nullptr;
     word stack_count = 0;
     word stack[STACK_SZ] = {0};
 
