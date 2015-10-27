@@ -6,49 +6,49 @@ namespace svm {
 
 void vm_init()
 {
-    opInfo.set(OP_END, "end", false);
-    opInfo.set(OP_HALT, "halt", false);
-    opInfo.set(OP_DUMPBC, "dumpbc", false);
-    opInfo.set(OP_DUMPNBC, "dumpnbc", false);
+    opInfo.set(Op::END, "end", false);
+    opInfo.set(Op::HALT, "halt", false);
+    opInfo.set(Op::DUMPBC, "dumpbc", false);
+    opInfo.set(Op::DUMPNBC, "dumpnbc", false);
 
-    opInfo.set(OP_SPUSH, "spush", true);
-    opInfo.set(OP_SP, "sp", true);
-    opInfo.set(OP_SPOP, "spop", false);
-    opInfo.set(OP_SREV, "srev", false);
-    opInfo.set(OP_SREVN, "srevn", true);
-    opInfo.set(OP_SDUMP, "sdump", false);
-    opInfo.set(OP_SDUP, "sdup", false);
+    opInfo.set(Op::SPUSH, "spush", true);
+    opInfo.set(Op::SP, "sp", true);
+    opInfo.set(Op::SPOP, "spop", false);
+    opInfo.set(Op::SREV, "srev", false);
+    opInfo.set(Op::SREVN, "srevn", true);
+    opInfo.set(Op::SDUMP, "sdump", false);
+    opInfo.set(Op::SDUP, "sdup", false);
 
-    opInfo.set(OP_MADD, "madd", false);
-    opInfo.set(OP_MSUB, "msub", false);
-    opInfo.set(OP_MMUL, "mmul", false);
-    opInfo.set(OP_MDIV, "mdiv", false);
+    opInfo.set(Op::MADD, "madd", false);
+    opInfo.set(Op::MSUB, "msub", false);
+    opInfo.set(Op::MMUL, "mmul", false);
+    opInfo.set(Op::MDIV, "mdiv", false);
 
-    opInfo.set(OP_INC, "inc", false);
-    opInfo.set(OP_DEC, "dec", false);
+    opInfo.set(Op::INC, "inc", false);
+    opInfo.set(Op::DEC, "dec", false);
 
-    opInfo.set(OP_XOR, "xor", false);
-    opInfo.set(OP_AND, "and", false);
-    opInfo.set(OP_OR, "or", false);
-    opInfo.set(OP_NOT, "not", false);
+    opInfo.set(Op::XOR, "xor", false);
+    opInfo.set(Op::AND, "and", false);
+    opInfo.set(Op::OR, "or", false);
+    opInfo.set(Op::NOT, "not", false);
 
-    opInfo.set(OP_PRINT, "print", false);
-    opInfo.set(OP_PRINTN, "printn", true);
+    opInfo.set(Op::PRINT, "print", false);
+    opInfo.set(Op::PRINTN, "printn", true);
 
-    opInfo.set(OP_CMPE, "cmpe", false);
-    opInfo.set(OP_CMPG, "cmpg", false);
-    opInfo.set(OP_CMPGE, "cmpge", false);
+    opInfo.set(Op::CMPE, "cmpe", false);
+    opInfo.set(Op::CMPG, "cmpg", false);
+    opInfo.set(Op::CMPGE, "cmpge", false);
 
-    opInfo.set(OP_JUMP, "jump", true);
-    opInfo.set(OP_JUMPT, "jumpt", true);
-    opInfo.set(OP_JUMPF, "jumpf", true);
+    opInfo.set(Op::JUMP, "jump", true);
+    opInfo.set(Op::JUMPT, "jumpt", true);
+    opInfo.set(Op::JUMPF, "jumpf", true);
 
-    opInfo.set(OP_LABEL, "label", true);
-    opInfo.set(OP_GOTO, "goto", true);
-    opInfo.set(OP_GOTOT, "gotot", true);
-    opInfo.set(OP_GOTOF, "gotof", true);
+    opInfo.set(Op::LABEL, "label", true);
+    opInfo.set(Op::GOTO, "goto", true);
+    opInfo.set(Op::GOTOT, "gotot", true);
+    opInfo.set(Op::GOTOF, "gotof", true);
 
-    //opInfo.set(OP_, "", false);
+    //opInfo.set(Op::__, "", false);
 }
 
 void run(Context *C)

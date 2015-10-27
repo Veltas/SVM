@@ -75,17 +75,17 @@ bool compile(char *program, word sz, byte **pcompiled, word *compiledsize)
 
                     switch (O)
                     {
-                    case OP_END:
+                    case Op::END:
                         printf("No such operator %s at %d\n", token, bcneededsize);
                         return false;
-                    case OP_LABEL:
+                    case Op::LABEL:
                         islabel = true;
                         tokenIndex = 0;
                         memset(token, 0, sizeof token);
                         continue;
-                    case OP_GOTO:
-                    case OP_GOTOT:
-                    case OP_GOTOF:
+                    case Op::GOTO:
+                    case Op::GOTOT:
+                    case Op::GOTOF:
                         isgoto = true;
                         break;
                     }
@@ -139,7 +139,7 @@ bool compile(char *program, word sz, byte **pcompiled, word *compiledsize)
 
     for (word i = 0, bi = 0; i < AST_count; i++)
     {
-        if (AST_[i].op >= OP_GOTO && AST_[i].op <= OP_GOTOF)
+        if (AST_[i].op >= Op::GOTO && AST_[i].op <= Op::GOTOF)
         {
             bool found = false;
             word j = 0;
@@ -159,14 +159,14 @@ bool compile(char *program, word sz, byte **pcompiled, word *compiledsize)
 
             switch (AST_[i].op)
             {
-            case OP_GOTO:
-                bytecode[bi++] = OP_JUMP;
+            case Op::GOTO:
+                bytecode[bi++] = static_cast<byte>(Op::JUMP);
                 break;
-            case OP_GOTOT:
-                bytecode[bi++] = OP_JUMPT;
+            case Op::GOTOT:
+                bytecode[bi++] = static_cast<byte>(Op::JUMPT);
                 break;
-            case OP_GOTOF:
-                bytecode[bi++] = OP_JUMPF;
+            case Op::GOTOF:
+                bytecode[bi++] = static_cast<byte>(Op::JUMPF);
                 break;
             }
 
@@ -176,7 +176,7 @@ bool compile(char *program, word sz, byte **pcompiled, word *compiledsize)
         }
         else
         {
-            bytecode[bi++] = AST_[i].op;
+            bytecode[bi++] = static_cast<byte>(AST_[i].op);
             if (AST_[i].hasreg)
             {
                 memcpy(bytecode + bi, &AST_[i].reg, sizeof(word));

@@ -8,28 +8,28 @@ OpInfo opInfo;
 
 void OpInfo::set(Op O, const char *name, bool hasreg)
 {
-    strcpy(m_opInfoList[O].name, name);
-    m_opInfoList[O].hasreg = hasreg;
-    m_opInfoList[O].op = O;
+    strcpy(m_opInfoList[static_cast<byte>(O)].name, name);
+    m_opInfoList[static_cast<byte>(O)].hasreg = hasreg;
+    m_opInfoList[static_cast<byte>(O)].op = O;
 }
 
 
 bool OpInfo::hasreg(Op O)
 {
-    return m_opInfoList[O].hasreg;
+    return m_opInfoList[static_cast<byte>(O)].hasreg;
 }
 
 char* OpInfo::name(Op O)
 {
-    return m_opInfoList[O].name;
+    return m_opInfoList[static_cast<byte>(O)].name;
 }
 
 Op OpInfo::find(char *name)
 {
-    for (word i = 0; i < OP__MAX__; i++)
+    for (word i = 0; i < maxOps; i++)
         if (!strcmp(m_opInfoList[i].name, name))
             return m_opInfoList[i].op;
-    return OP_END;
+    return Op::END;
 }
 
 } // namespace svm

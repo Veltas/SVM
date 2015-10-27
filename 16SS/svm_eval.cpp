@@ -19,99 +19,99 @@ word getv(Context *C)
 
 void eval(Context *C, byte op)
 {
-    switch(op)
+    switch(static_cast<Op>(op))
     {
-    case OP_HALT:
+    case Op::HALT:
         C->running = false;
         break;
-    case OP_DUMPBC:
+    case Op::DUMPBC:
         dump_bytecode(C->code, C->code_size, false);
         break;
-    case OP_DUMPNBC:
+    case Op::DUMPNBC:
         dump_bytecode(C->code, C->code_size, true);
         break;
         // ---------------------------------------------------
-    case OP_SP:
-    case OP_SPUSH:
+    case Op::SP:
+    case Op::SPUSH:
     {
         word v = getv(C);
         push(C, v);
         break;
     }
-    case OP_SPOP:
+    case Op::SPOP:
         pop(C);
         break;
-    case OP_SREV:
+    case Op::SREV:
         reverse(C, false, 0);
         break;
-    case OP_SREVN:
+    case Op::SREVN:
         reverse(C, true, getv(C));
         break;
-    case OP_SDUMP:
+    case Op::SDUMP:
         dump_stack(C);
         break;
-    case OP_SDUP:
+    case Op::SDUP:
         push(C, C->stack[C->stack_count - 1]);
         break;
         // ---------------------------------------------------
-    case OP_MADD:
+    case Op::MADD:
     {
         word v1 = pop(C);
         push(C, v1 + pop(C));
         break;
     }
-    case OP_MSUB:
+    case Op::MSUB:
     {
         word v1 = pop(C);
         push(C, v1 - pop(C));
         break;
     }
-    case OP_MDIV:
+    case Op::MDIV:
     {
         word v1 = pop(C);
         push(C, v1 / pop(C));
         break;
     }
-    case OP_MMUL:
+    case Op::MMUL:
     {
         word v1 = pop(C);
         push(C, v1 * pop(C));
         break;
     }
         // ---------------------------------------------------
-    case OP_INC:
+    case Op::INC:
         push(C, pop(C) + 1);
         break;
-    case OP_DEC:
+    case Op::DEC:
         push(C, pop(C) - 1);
         break;
         // ---------------------------------------------------
-    case OP_XOR:
+    case Op::XOR:
     {
         word v = pop(C);
         push(C, v ^ pop(C));
         break;
     }
-    case OP_AND:
+    case Op::AND:
     {
         word v = pop(C);
         push(C, v & pop(C));
         break;
     }
-    case OP_OR:
+    case Op::OR:
     {
         word v = pop(C);
         push(C, v | pop(C));
         break;
     }
-    case OP_NOT:
+    case Op::NOT:
         push(C, ~pop(C));
         break;
         // ---------------------------------------------------
-    case OP_PRINT:
+    case Op::PRINT:
         printf("%d", pop(C));
         break;
-    case OP_PRINTN:
+    case Op::PRINTN:
     {
         word count = getv(C);
         while (count-- != 0)
@@ -120,35 +120,35 @@ void eval(Context *C, byte op)
         }
     }
         // ---------------------------------------------------
-    case OP_CMPE:
+    case Op::CMPE:
     {
         word v = pop(C);
         (v == pop(C) ? push(C, 1) : push(C, 0));
         break;
     }
-    case OP_CMPG:
+    case Op::CMPG:
     {
         word v = pop(C);
         (v > pop(C) ? push(C, 1) : push(C, 0));
         break;
     }
-    case OP_CMPGE:
+    case Op::CMPGE:
     {
         word v = pop(C);
         (v >= pop(C) ? push(C, 1) : push(C, 0));
         break;
     }
         // ---------------------------------------------------
-    case OP_JUMP:
+    case Op::JUMP:
         C->opi = getv(C);
         break;
-    case OP_JUMPT:
+    case Op::JUMPT:
         if (pop(C) != 0)
             C->opi = getv(C);
         else
             C->opi += 2;
         break;
-    case OP_JUMPF:
+    case Op::JUMPF:
         if (pop(C) == 0)
             C->opi = getv(C);
         else

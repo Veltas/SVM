@@ -18,80 +18,67 @@ namespace svm {
 typedef uint8_t byte;
 typedef int16_t word;
 
-
-struct Context
-{
-    bool running = false;
-    word opi = 0;
-    word code_size = 0;
-    byte *code = nullptr;
-    word stack_count = 0;
-    word stack[STACK_SZ] = {0};
-
-    void setprogram(byte *program, word size);
-    ~Context();
-};
-
 /*
  * Each op should be defined here
  *  op info should be added in s_vm_init in svm_util.c
  *  op behavior should be added in s_eval in svm_eval.c
  */
-enum Op
+enum class Op: byte
 {
     // VM
-    OP_END = 0,   // nothing
-    OP_HALT,      // stops running
-    OP_DUMPBC,    // dumps bytecode
-    OP_DUMPNBC,   // dumps nice bytecode
+    END = 0,   // nothing
+    HALT,      // stops running
+    DUMPBC,    // dumps bytecode
+    DUMPNBC,   // dumps nice bytecode
 
     // Stack
-    OP_SPUSH,     // <value> [push 1] push element on stack
-    OP_SP,        // <value> [push 1] alais for spush
-    OP_SPOP,      // [pop 1] pops the last element
-    OP_SREV,      // reverses the whole stack
-    OP_SREVN,     // <value> reverses top of the stack with given length
-    OP_SDUMP,      // dumps the stack
-    OP_SDUP,      // [push 1] duplicates the last element on stack
+    SPUSH,     // <value> [push 1] push element on stack
+    SP,        // <value> [push 1] alais for spush
+    SPOP,      // [pop 1] pops the last element
+    SREV,      // reverses the whole stack
+    SREVN,     // <value> reverses top of the stack with given length
+    SDUMP,      // dumps the stack
+    SDUP,      // [push 1] duplicates the last element on stack
 
     // Math
-    OP_MADD,      // [pop 2, push 1] math add
-    OP_MSUB,      // [pop 2, push 1] math subtract
-    OP_MMUL,      // [pop 2, push 1] math multipy
-    OP_MDIV,      // [pop 2, push 1] math divide
+    MADD,      // [pop 2, push 1] math add
+    MSUB,      // [pop 2, push 1] math subtract
+    MMUL,      // [pop 2, push 1] math multipy
+    MDIV,      // [pop 2, push 1] math divide
 
     // Increament decreament
-    OP_INC,       // [pop 1, push 1] increase the last element if possible
-    OP_DEC,       // [pop 1, push 1] decrease the last element if possible
+    INC,       // [pop 1, push 1] increase the last element if possible
+    DEC,       // [pop 1, push 1] decrease the last element if possible
 
     // Bitwise stuff
-    OP_XOR,       // [pop 2, push 1] bitwise xor
-    OP_AND,       // [pop 2, push 1] bitwise and
-    OP_OR,        // [pop 2, push 1] bitwise or
-    OP_NOT,       // [pop 1, push 1] bitwise not
+    XOR,       // [pop 2, push 1] bitwise xor
+    AND,       // [pop 2, push 1] bitwise and
+    OR,        // [pop 2, push 1] bitwise or
+    NOT,       // [pop 1, push 1] bitwise not
 
     // Print
-    OP_PRINT,     // [pop 1] prints the last element on stack
-    OP_PRINTN,    // [pop n] prints count elements from stack
+    PRINT,     // [pop 1] prints the last element on stack
+    PRINTN,    // [pop n] prints count elements from stack
 
     // Comparations
-    OP_CMPE,      // [pop 2, push 1] compare equal
-    OP_CMPG,      // [pop 2, push 1] compare greater
-    OP_CMPGE,     // [pop 2, push 1] compare equal or greater
+    CMPE,      // [pop 2, push 1] compare equal
+    CMPG,      // [pop 2, push 1] compare greater
+    CMPGE,     // [pop 2, push 1] compare equal or greater
 
     // Jump
-    OP_JUMP,      // <number> jump to offset
-    OP_JUMPT,     // <number> [pop 1] jump to offset if last element on stack is true
-    OP_JUMPF,     // <number> [pop 1] jump to offset if last element on stack is false
+    JUMP,      // <number> jump to offset
+    JUMPT,     // <number> [pop 1] jump to offset if last element on stack is true
+    JUMPF,     // <number> [pop 1] jump to offset if last element on stack is false
 
     // These are used only by the compiler
-    OP_LABEL,     // <key> defines a label
-    OP_GOTO,      // <key> jumps to a label
-    OP_GOTOT,     // <key> [pop 1] jumps to a label if last element on stack is true
-    OP_GOTOF,     // <key> [pop 1] jumps to a label if last element on stack is true
+    LABEL,     // <key> defines a label
+    GOTO,      // <key> jumps to a label
+    GOTOT,     // <key> [pop 1] jumps to a label if last element on stack is true
+    GOTOF,     // <key> [pop 1] jumps to a label if last element on stack is true
 
-    OP__MAX__
+    __MAX__
 };
+constexpr byte maxOps = static_cast<byte>(Op::__MAX__);
 
 class OpInfo
 {
@@ -106,10 +93,23 @@ private:
     {
         char name[32] = "";
         bool hasreg = false;
-        Op op = OP_END;
-    } m_opInfoList[OP__MAX__];
+        Op op = Op::END;
+    } m_opInfoList[maxOps];
 };
 extern OpInfo opInfo;
+
+struct Context
+{
+    bool running = false;
+    word opi = 0;
+    word code_size = 0;
+    byte *code = nullptr;
+    word stack_count = 0;
+    word stack[STACK_SZ] = {0};
+
+    void setprogram(byte *program, word size);
+    ~Context();
+};
 
 // eval
 byte next(Context *C);
