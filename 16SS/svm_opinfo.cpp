@@ -3,7 +3,7 @@
 
 namespace
 {
-	sOpInfo sOpInfoList[S_OP__MAX__] = {0};
+    sOpInfo sOpInfoList[S_OP__MAX__] = {0};
 }
 
 
