@@ -1,12 +1,12 @@
 #include "svm.hpp"
 
 
-typedef enum
+enum Action
 {
     ACT_Compile,
     ACT_Run,
     ACT_Dump,
-} Action;
+};
 
 
 int main(int argc, char *argv[])

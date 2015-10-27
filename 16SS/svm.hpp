@@ -17,7 +17,7 @@ typedef uint8_t byte;
 typedef int16_t word;
 
 
-struct sContext_s
+struct sContext
 {
     bool running;
     word opi;
@@ -26,14 +26,13 @@ struct sContext_s
     word stack_count;
     word stack[STACK_SZ];
 };
-typedef struct sContext_s sContext;
 
 /*
  * Each op should be defined here
  *  op info should be added in s_vm_init in svm_util.c
  *  op behavior should be added in s_eval in svm_eval.c
  */
-enum sOp_e
+enum sOp
 {
     // VM
     S_OP_END = 0,   // nothing
@@ -88,13 +87,12 @@ enum sOp_e
 
     S_OP__MAX__
 };
-typedef enum sOp_e sOp;
-typedef struct sOpInfo_s
+struct sOpInfo
 {
     char name[32];
     bool hasreg;
     sOp op;
-} sOpInfo;
+};
 
 
 // eval
