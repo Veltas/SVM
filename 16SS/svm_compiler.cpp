@@ -54,7 +54,7 @@ bool compile(char *program, word sz, byte **pcompiled, word *compiledsize)
             if (tokenIndex > 0)
             {
                 if (islabel)
-               {
+                {
                     memset(JumpTable_[JumpTable_count].key, 0, 32);
                     strcpy(JumpTable_[JumpTable_count].key, token);
                     JumpTable_[JumpTable_count++].offset = bcneededsize;
